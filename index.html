@@ -306,8 +306,48 @@ function hl(src){
 }
 // a view = how the value is written in code: { name, expr(value,lang), note?(value) }
 const V=(name,f,note)=>({name,note,expr:(v,l)=>fmtV(f(v),l)});
+function tsType(value,view){
+  if(view.name==='head')return 'ListNode | null';
+  if(view.expr===treeExpr)return 'TreeNode | null';
+  if(view.name==='root'&&Array.isArray(value))return '(number | null)[]';
+  if(view.name==='vals')return 'number[]';
+  if(view.name==='list')return 'LinkedListData';
+  if(view.name==='graph'&&value&&Array.isArray(value.edges))return 'GraphData';
+  if(view.name==='edges')return 'GraphEdge[]';
+  if(Array.isArray(value)){
+    if(!value.length)return 'unknown[]';
+    if(value.every(x=>Array.isArray(x)))return 'number[][]';
+    if(value.every(x=>typeof x==='number'))return 'number[]';
+    if(value.every(x=>typeof x==='string'))return 'string[]';
+    return 'unknown[]';
+  }
+  if(typeof value==='string')return 'string';
+  if(typeof value==='number')return 'number';
+  return 'unknown';
+}
+function tsTypes(view,val){
+  const t=tsType(val,view), defs=[];
+  if(t.includes('ListNode'))defs.push('type ListNode = { val: number; next: ListNode | null };');
+  if(t==='LinkedListData')defs.push('type LinkedListData = { vals: number[]; pos: number };');
+  if(t.includes('TreeNode'))defs.push('type TreeNode = { val: number; left: TreeNode | null; right: TreeNode | null };');
+  if(t==='GraphData'||t==='GraphEdge[]')defs.push(
+    'type GraphNode = number | string;',
+    'type GraphEdge = [from: GraphNode, to: GraphNode] | [from: GraphNode, to: GraphNode, weight: number];',
+    'type GraphData = { n?: number; directed?: boolean; nodes?: GraphNode[]; edges: GraphEdge[] };'
+  );
+  if(view.expr===gAdj)defs.push(
+    'type GraphNode = number | string;',
+    'type AdjacencyEntry = GraphNode | [node: GraphNode, weight: number];',
+    'type AdjacencyList = AdjacencyEntry[][] | Record<string, AdjacencyEntry[]>;'
+  );
+  return {type:t,defs:[...new Set(defs)]};
+}
 function snippet(view,val,l){
   const c=l==='py'?'#':'//', e=view.expr(val,l), note=view.note?view.note(val):'';
+  if(l==='ts'){
+    const t=tsTypes(view,val);
+    return (note?`// ${note}\n`:'')+(t.defs.length?t.defs.join('\n')+'\n\n':'')+`const ${view.name}: ${t.type} = ${e};`;
+  }
   return (note?`${c} ${note}\n`:'')+(l==='py'?`${view.name} = ${e}`:`const ${view.name} = ${e};`);
 }
 
@@ -415,7 +455,7 @@ function render(){
     <button id="regen" class="pri">New mocks</button>
     ${s.opt?`<label>${esc(s.opt.label)}<select id="opt">${Object.entries(s.opt.choices).map(([k,t])=>`<option value="${k}" ${k===optVal?'selected':''}>${esc(t)}</option>`).join('')}</select></label>`:''}
     <label>Show as<select id="view">${Object.keys(s.views).map(k=>`<option ${k===view?'selected':''}>${esc(k)}</option>`).join('')}</select></label>
-    <label>Language<select id="lang"><option value="js" ${lang==='js'?'selected':''}>JavaScript</option><option value="py" ${lang==='py'?'selected':''}>Python</option></select></label>
+    <label>Language<select id="lang"><option value="js" ${lang==='js'?'selected':''}>JavaScript</option><option value="ts" ${lang==='ts'?'selected':''}>TypeScript</option><option value="py" ${lang==='py'?'selected':''}>Python</option></select></label>
     <button id="all">Copy all ${COUNT} values</button>
   </div><div class="grid">${cards}</div>`;
 
