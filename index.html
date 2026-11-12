@@ -308,7 +308,7 @@ function hl(src){
 const V=(name,f,note)=>({name,note,expr:(v,l)=>fmtV(f(v),l)});
 function tsType(value,view){
   if(view.name==='head')return 'ListNode | null';
-  if(view.expr===gAdj)return 'AdjacencyList';
+  if(view.expr===gAdj)return 'AdjacencyMap';
   if(view.expr===treeExpr)return 'TreeNode | null';
   if(view.name==='root'&&Array.isArray(value))return '(number | null)[]';
   if(view.name==='vals')return 'number[]';
@@ -358,7 +358,7 @@ function tsTypes(view,val){
   if(view.expr===gAdj)defs.push(
     'type GraphNode = number | string;',
     'type AdjacencyEntry = GraphNode | [node: GraphNode, weight: number];',
-    'type AdjacencyList = AdjacencyEntry[][] | Record<string, AdjacencyEntry[]>;'
+    'type AdjacencyMap = Map<GraphNode, AdjacencyEntry[]>;'
   );
   return {type:t,defs:[...new Set(defs)]};
 }
@@ -400,9 +400,15 @@ function applyLabels(g,mode,sd){
 }
 const lab=(g,i)=>g.labels?g.labels[i]:i;
 const gEdges=g=>g.edges.map(([u,v,w])=>w===undefined?[lab(g,u),lab(g,v)]:[lab(g,u),lab(g,v),w]);
-const gAdj=g=>{
+const gAdj=(g,l)=>{
   const a=arr(g.n,()=>[]);
   g.edges.forEach(([u,v,w])=>{const t=x=>w===undefined?lab(g,x):[lab(g,x),w];a[u].push(t(v));if(!g.directed)a[v].push(t(u))});
+  if(l==='ts'){
+    const entries=a.map((neighbors,i)=>[lab(g,i),neighbors]);
+    return 'new Map<GraphNode, AdjacencyEntry[]>(['+
+      entries.map(([node,neighbors])=>'['+js(node)+', '+js(neighbors)+']').join(', ')+
+    '])';
+  }
   if(!g.labels)return a;
   const o={};a.forEach((x,i)=>o[g.labels[i]]=x);return o;
 };
