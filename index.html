@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Algo Mocks</title>
+<style>
+:root{--bg:#f3f5f7;--sf:#fff;--tx:#14202b;--mu:#66727f;--bd:#dde2e7;--ac:#0b7a85;--ac2:#dff1f3;--ok:#1a7f4b;--cd:#f7f9fa;--c-st:#1a7f4b;--c-nu:#b4530a;--c-kw:#7c3aed;--c-cl:#0b7a85;color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1318;--sf:#161d24;--tx:#e6ebf0;--mu:#8b97a3;--bd:#27313b;--ac:#4cc3cf;--ac2:#10343a;--ok:#5fd394;--cd:#11171d;--c-st:#7ee2a8;--c-nu:#f0b36a;--c-kw:#c4a1ff;--c-cl:#4cc3cf}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;display:grid;grid-template-columns:260px 1fr}
+code,input,select{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+nav{border-right:1px solid var(--bd);background:var(--sf);padding:16px 10px;overflow:auto;height:100vh;position:sticky;top:0}
+nav h1{font-size:16px;margin:2px 10px 14px;letter-spacing:.01em}
+nav a{display:block;color:inherit;text-decoration:none;padding:6px 10px;border-radius:6px}
+nav a:hover{background:var(--bg)}
+nav a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+nav .s{font-weight:600;margin-top:6px}
+nav .s.on{color:var(--ac)}
+nav .v{margin-left:12px;color:var(--mu);font-size:14px;border-left:1px solid var(--bd);border-radius:0 6px 6px 0}
+nav .v.on{background:var(--ac2);color:var(--ac);border-left-color:var(--ac);font-weight:600}
+main{padding:22px 28px 60px;min-width:0}
+h2{margin:0;font-size:22px}
+.desc{color:var(--mu);margin:2px 0 16px;max-width:64ch}
+.bar{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:end;margin-bottom:20px;padding:12px 14px;background:var(--sf);border:1px solid var(--bd);border-radius:8px}
+.bar label{display:flex;flex-direction:column;font-size:12px;color:var(--mu);gap:3px}
+input,select,button{font-size:14px;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:6px 9px}
+input[type=number]{width:84px}
+button{cursor:pointer;font-family:inherit}
+button:hover{border-color:var(--ac)}
+button.pri{background:var(--ac);border-color:var(--ac);color:var(--bg);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,540px),1fr));gap:14px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:8px;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.body{display:flex;flex-wrap:wrap;flex:1}
+.code{flex:1 1 240px;min-width:0;margin:0;padding:12px 14px;background:var(--cd);font:12.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;overflow:auto;max-height:320px;border-right:1px solid var(--bd)}
+.viz{flex:1 1 240px;padding:14px;min-height:110px;display:flex;align-items:center;justify-content:center;overflow-x:auto;min-width:0}
+.foot{border-top:1px solid var(--bd);padding:7px 10px 7px 14px;display:flex;gap:8px;align-items:center}
+.foot .sd{flex:1;color:var(--mu);font-size:12px}
+.foot button{padding:4px 9px;font-size:13px}
+.cm{color:var(--mu);font-style:italic}.st{color:var(--c-st)}.nu{color:var(--c-nu)}.kw{color:var(--c-kw)}.cl{color:var(--c-cl)}
+button.ok{border-color:var(--ok);color:var(--ok)}
+svg{display:block;height:auto;max-width:100%}
+svg text{fill:var(--tx);font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
+svg text.mu{fill:var(--mu)} svg text.sm{font-size:10.5px}
+.cell{fill:var(--bg);stroke:var(--bd);stroke-width:1.5}
+.on1{fill:var(--ac2);stroke:var(--ac)}
+.node{fill:var(--ac2);stroke:var(--ac);stroke-width:1.5}
+.ln{stroke:var(--mu);stroke-width:1.5;fill:none}
+@media(max-width:760px){body{grid-template-columns:1fr}nav{height:auto;position:static;border-right:0;border-bottom:1px solid var(--bd)}main{padding:16px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav aria-label="Data structures"><h1>Algo Mocks</h1><div id="nav"></div></nav>
+<main id="main"></main>
+<script>
+/* ---------- helpers ---------- */
+const rng=s=>{let a=s>>>0;return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}};
+const ri=(r,lo,hi)=>lo+Math.floor(r()*(hi-lo+1));
+const arr=(n,f)=>Array.from({length:n},(_,i)=>f(i));
+const shuffle=(r,a)=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=ri(r,0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const asc=(a,b)=>a-b, desc=(a,b)=>b-a;
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const py=v=>v===null?'None':typeof v==='string'?JSON.stringify(v):typeof v==='boolean'?(v?'True':'False'):Array.isArray(v)?'['+v.map(py).join(', ')+']':typeof v==='object'?'{'+Object.entries(v).map(([k,x])=>JSON.stringify(k)+': '+py(x)).join(', ')+'}':String(v);
+const js=v=>v===null?'null':typeof v==='string'?JSON.stringify(v):Array.isArray(v)?'['+v.map(js).join(', ')+']':typeof v==='object'?'{'+Object.entries(v).map(([k,x])=>k+': '+js(x)).join(', ')+'}':String(v);
+
+/* ---------- svg primitives ---------- */
+const DEFS='<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--mu)"/></marker></defs>';
+const svg=(w,h,b)=>`<svg viewBox="0 0 ${w} ${h}" width="${Math.min(w,620)}" role="img">${DEFS}${b}</svg>`;
+const txt=(x,y,t,c='')=>`<text x="${x}" y="${y}" class="${c}" text-anchor="middle" dominant-baseline="central">${esc(t)}</text>`;
+const empty=t=>svg(120,30,txt(60,15,t,'mu'));
+
+function cells(a,per=12,cw=40){
+  if(!a.length)return empty('empty');
+  let b='';
+  a.forEach((x,i)=>{const cx=(i%per)*cw+2,cy=Math.floor(i/per)*60+2,w=cw-4;
+    b+=`<rect class="cell" x="${cx}" y="${cy}" width="${w}" height="36" rx="6"/>`+txt(cx+w/2,cy+18,x)+txt(cx+w/2,cy+48,i,'mu sm')});
+  return svg(Math.min(a.length,per)*cw+2,Math.ceil(a.length/per)*60,b);
+}
+function vArray(v){return cells(v)}
+function vString(s){return s.length?cells(Array.from(s).map(c=>c===' '?'␣':c),16,34):empty('"" (empty string)')}
+
+function vList(v){
+  const a=v.vals; if(!a.length)return empty('null (empty list)');
+  const cw=66,n=a.length; let b='';
+  a.forEach((x,i)=>{const cx=i*cw+4;
+    b+=`<rect class="cell" x="${cx}" y="4" width="44" height="36" rx="6"/>`+txt(cx+22,22,x);
+    if(i<n-1)b+=`<line class="ln" x1="${cx+46}" y1="22" x2="${cx+cw-2}" y2="22" marker-end="url(#ar)"/>`});
+  const lx=(n-1)*cw+4;
+  let h=46;
+  if(v.pos>=0){const x2=v.pos*cw+26,x1=lx+22;b+=`<path class="ln" d="M${x1} 40 C${x1} 78,${x2} 78,${x2} 42" marker-end="url(#ar)"/>`;h=72}
+  else b+=`<line class="ln" x1="${lx+46}" y1="22" x2="${lx+62}" y2="22" marker-end="url(#ar)"/>`+txt(lx+80,22,'null','mu');
+  return svg(n*cw+(v.pos>=0?8:50),h,b);
+}
+
+function parseTree(a){
+  if(!a.length||a[0]===null)return null;
+  const root={v:a[0]},q=[root];let i=1;
+  while(q.length&&i<a.length){const nd=q.shift();
+    if(i<a.length){const l=a[i++];if(l!==null){nd.l={v:l};q.push(nd.l)}}
+    if(i<a.length){const r=a[i++];if(r!==null){nd.r={v:r};q.push(nd.r)}}}
+  return root;
+}
+function serTree(root){
+  if(!root)return [];
+  const out=[],q=[root];
+  while(q.length){const n=q.shift();if(n){out.push(n.v);q.push(n.l||null,n.r||null)}else out.push(null)}
+  while(out.length&&out[out.length-1]===null)out.pop();
+  return out;
+}
+function vTree(a){
+  const root=parseTree(a); if(!root)return empty('null (empty tree)');
+  let i=0,md=0;const ns=[];
+  (function f(n,d){if(n.l)f(n.l,d+1);n.x=i++*34+20;n.y=d*50+22;md=Math.max(md,d);ns.push(n);if(n.r)f(n.r,d+1)})(root,0);
+  let b='';
+  ns.forEach(n=>[n.l,n.r].forEach(c=>{if(c)b+=`<line class="ln" x1="${n.x}" y1="${n.y}" x2="${c.x}" y2="${c.y}"/>`}));
+  ns.forEach(n=>b+=`<circle class="node" cx="${n.x}" cy="${n.y}" r="15"/>`+txt(n.x,n.y,n.v));
+  return svg(i*34+6,md*50+46,b);
+}
+
+function vGraph(g){
+  if(!g.n)return empty('empty graph');
+  const L=i=>String(g.labels?g.labels[i]:i), long=!!g.labels&&g.labels.some(x=>String(x).length>2);
+  const nw=i=>long?Math.max(34,L(i).length*8+16):30;
+  const S=long?340:290,c=S/2,R=g.n===1?0:c-(long?34:26);
+  const P=arr(g.n,i=>{const t=2*Math.PI*i/g.n-Math.PI/2;return[c+R*Math.cos(t),c+R*Math.sin(t)]});
+  const edge=(i,ux,uy)=>long?Math.min(nw(i)/2/Math.max(Math.abs(ux),1e-6),13/Math.max(Math.abs(uy),1e-6)):15;
+  let b='';
+  g.edges.forEach(([u,v,w])=>{
+    const[x1,y1]=P[u],[x2,y2]=P[v],d=Math.hypot(x2-x1,y2-y1)||1,ux=(x2-x1)/d,uy=(y2-y1)/d;
+    const a=edge(u,ux,uy),e=edge(v,ux,uy)+(g.directed?3:0);
+    b+=`<line class="ln" x1="${x1+ux*a}" y1="${y1+uy*a}" x2="${x2-ux*e}" y2="${y2-uy*e}" ${g.directed?'marker-end="url(#ar)"':''}/>`;
+    if(w!==undefined)b+=`<rect x="${(x1+x2)/2-8}" y="${(y1+y2)/2-8}" width="16" height="16" rx="4" fill="var(--sf)"/>`+txt((x1+x2)/2,(y1+y2)/2,w,'sm');
+  });
+  P.forEach(([x,y],i)=>{
+    b+=long?`<rect class="node" x="${x-nw(i)/2}" y="${y-13}" width="${nw(i)}" height="26" rx="13"/>`:`<circle class="node" cx="${x}" cy="${y}" r="15"/>`;
+    b+=txt(x,y,L(i),long?'sm':'');
+  });
+  return svg(S,S,b);
+}
+
+function vMatrix(m){
+  if(!m.length)return empty('empty');
+  const bin=m.every(r=>r.every(x=>x===0||x===1)),cw=34;
+  let b='';
+  m.forEach((r,i)=>r.forEach((x,j)=>b+=`<rect class="cell ${bin&&x===1?'on1':''}" x="${j*cw+2}" y="${i*cw+2}" width="${cw-4}" height="${cw-4}" rx="4"/>`+txt(j*cw+cw/2,i*cw+cw/2,x)));
+  return svg(m[0].length*cw+2,m.length*cw+2,b);
+}
+
+/* ---------- generators ---------- */
+// arrays
+const AG={
+  random:(r,n)=>arr(n,()=>ri(r,0,99)),
+  unique:(r,n)=>shuffle(r,arr(n,i=>i+1)),
+  sorted:(r,n)=>AG.random(r,n).sort(asc),
+  reverse:(r,n)=>AG.random(r,n).sort(desc),
+  dups:(r,n)=>arr(n,()=>ri(r,0,3)),
+  equal:(r,n)=>arr(n,()=>7),
+  negatives:(r,n)=>arr(n,()=>ri(r,-50,50)),
+  nearly:(r,n)=>{const a=AG.random(r,n).sort(asc);for(let k=0;k<ri(r,1,2);k++){if(n>1){const i=ri(r,0,n-2);[a[i],a[i+1]]=[a[i+1],a[i]]}}return a},
+  tiny:(r)=>AG.random(r,ri(r,0,2))
+};
+const arrVars=[
+  {id:'random',name:'Random',desc:'Random values 0–99. Duplicates possible.',gen:AG.random},
+  {id:'unique',name:'Unique (permutation)',desc:'A shuffled 1..n. No duplicates, so index/value mixups show up fast.',gen:AG.unique},
+  {id:'sorted',name:'Already sorted',desc:'Ascending order. Best case for many sorts, worst case for naive quicksort pivots.',gen:AG.sorted},
+  {id:'reverse',name:'Reverse sorted',desc:'Descending order. Worst case for insertion sort.',gen:AG.reverse},
+  {id:'nearly',name:'Nearly sorted',desc:'Sorted with one or two adjacent swaps.',gen:AG.nearly},
+  {id:'dups',name:'Many duplicates',desc:'Values from {0..3}. Checks stability and equal-key handling.',gen:AG.dups},
+  {id:'equal',name:'All equal',desc:'Every element is 7.',gen:AG.equal},
+  {id:'negatives',name:'With negatives',desc:'Values −50..50. Catches code that assumes non-negative numbers.',gen:AG.negatives},
+  {id:'tiny',name:'Tiny (0–2 elements)',desc:'Empty, single, or two elements. Ignores the size field.',gen:AG.tiny,fixed:true}
+];
+
+// linked lists: {vals,pos}  pos = index the tail points to, -1 = no cycle
+const LL=f=>(r,n)=>({vals:f(r,n),pos:-1});
+const listVars=[
+  {id:'random',name:'Random',desc:'Random values, no cycle.',gen:LL(AG.random)},
+  {id:'sorted',name:'Sorted',desc:'Ascending values, for merge/insert problems.',gen:LL(AG.sorted)},
+  {id:'dups',name:'Duplicates',desc:'Values from {0..3}, for remove-duplicates problems.',gen:LL(AG.dups)},
+  {id:'palin',name:'Palindrome',desc:'Reads the same forwards and backwards.',gen:(r,n)=>{const h=AG.random(r,Math.ceil(n/2));return{vals:h.concat(h.slice(0,Math.floor(n/2)).reverse()),pos:-1}}},
+  {id:'cycle',name:'With a cycle',desc:'Tail points back to a random earlier node (pos). Floyd cycle detection.',gen:(r,n)=>({vals:AG.unique(r,Math.max(n,1)),pos:ri(r,0,Math.max(n,1)-1)})},
+  {id:'tiny',name:'Tiny (0–2 nodes)',desc:'Empty, single, or two nodes.',gen:(r)=>({vals:AG.random(r,ri(r,0,2)),pos:-1}),fixed:true}
+];
+
+// binary trees: level-order array with nulls (LeetCode format)
+const treeVal=r=>ri(r,1,99);
+function randTree(r,n,mode){
+  if(!n)return [];
+  const root={v:treeVal(r)},open=[[root,'l'],[root,'r']];let last=root;
+  for(let i=1;i<n;i++){
+    const nd={v:treeVal(r)};
+    if(mode==='l'||mode==='r'||mode==='zig'){
+      const side=mode==='zig'?(i%2?'l':'r'):mode;last[side]=nd;last=nd;
+    }else{
+      const [p,s]=open.splice(ri(r,0,open.length-1),1)[0];p[s]=nd;open.push([nd,'l'],[nd,'r']);
+    }
+  }
+  return serTree(root);
+}
+function bst(r,n){
+  let root=null;const used=new Set();
+  const ins=(t,v)=>!t?{v}:(v<t.v?(t.l=ins(t.l,v),t):(t.r=ins(t.r,v),t));
+  while(used.size<n){const v=ri(r,1,99);if(!used.has(v)){used.add(v);root=ins(root,v)}}
+  return serTree(root);
+}
+const treeVars=[
+  {id:'random',name:'Random shape',desc:'Random structure and values.',gen:(r,n)=>randTree(r,n,'')},
+  {id:'bst',name:'Valid BST',desc:'Unique values inserted in random order. Shape varies from balanced to lopsided.',gen:bst},
+  {id:'complete',name:'Complete / balanced',desc:'Filled level by level. Depth is ⌊log₂ n⌋.',gen:(r,n)=>arr(n,()=>treeVal(r))},
+  {id:'left',name:'Left-skewed',desc:'Every node has only a left child. Depth n. Stack-overflow bait for recursion.',gen:(r,n)=>randTree(r,n,'l')},
+  {id:'right',name:'Right-skewed',desc:'Every node has only a right child.',gen:(r,n)=>randTree(r,n,'r')},
+  {id:'zig',name:'Zigzag',desc:'Alternates left/right going down.',gen:(r,n)=>randTree(r,n,'zig')},
+  {id:'tiny',name:'Tiny (0–2 nodes)',desc:'Empty tree, root only, or root plus one child.',gen:(r)=>randTree(r,ri(r,0,2),''),fixed:true}
+];
+
+// graphs: {n,directed,edges:[[u,v,(w)]]}
+const key=(u,v,d)=>d?u+','+v:Math.min(u,v)+','+Math.max(u,v);
+function spanning(r,ids){const s=shuffle(r,ids);return arr(Math.max(s.length-1,0),i=>[s[ri(r,0,i)],s[i+1]])}
+function addExtra(r,n,edges,k,directed){
+  const seen=new Set(edges.map(e=>key(e[0],e[1],directed)));
+  for(let t=0;t<k*4&&k>0;t++){const u=ri(r,0,n-1),v=ri(r,0,n-1);if(u===v)continue;const kk=key(u,v,directed);if(seen.has(kk))continue;seen.add(kk);edges.push([u,v]);k--}
+  return edges;
+}
+const ids=n=>arr(n,i=>i);
+const G=(directed,edges,n)=>({n,directed,edges});
+const connected=(r,n)=>addExtra(r,n,spanning(r,ids(n)),ri(r,0,n),false);
+const graphVars=[
+  {id:'connected',name:'Connected, undirected',desc:'Random spanning tree plus a few extra edges.',gen:(r,n)=>G(false,connected(r,n),n)},
+  {id:'tree',name:'Tree',desc:'Connected with exactly n−1 edges. No cycles.',gen:(r,n)=>G(false,spanning(r,ids(n)),n)},
+  {id:'disc',name:'Disconnected',desc:'Two separate components. Tests BFS/DFS that only start from node 0.',gen:(r,n)=>{
+    if(n<2)return G(false,[],n);const c=ri(r,1,n-1);
+    const e=spanning(r,ids(c)).concat(spanning(r,arr(n-c,i=>c+i)));return G(false,addExtra(r,n,e,ri(r,0,1),false).filter(([u,v])=>(u<c)===(v<c)),n)}},
+  {id:'cycle',name:'Single cycle',desc:'Ring 0–1–…–(n−1)–0.',gen:(r,n)=>G(false,n<3?arr(Math.max(n-1,0),i=>[i,i+1]):arr(n,i=>[i,(i+1)%n]),n)},
+  {id:'complete',name:'Complete (max 7 nodes)',desc:'Every pair connected.',gen:(r,n)=>{n=Math.min(n,7);const e=[];for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)e.push([i,j]);return G(false,e,n)}},
+  {id:'weighted',name:'Weighted',desc:'Connected, weights 1–9. For Dijkstra, Prim, Kruskal.',gen:(r,n)=>G(false,connected(r,n).map(([u,v])=>[u,v,ri(r,1,9)]),n)},
+  {id:'dag',name:'Directed acyclic (DAG)',desc:'Labels are shuffled, so edges do not always go from smaller to larger id. For topological sort.',gen:(r,n)=>{
+    const p=shuffle(r,ids(n)),e=[];for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(r()<.4)e.push([p[i],p[j]]);return G(true,e,n)}},
+  {id:'digraph',name:'Directed with cycles',desc:'Random directed edges, cycles possible.',gen:(r,n)=>{
+    const e=[];for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(r()<.35)e.push(r()<.5?[i,j]:[j,i]);return G(true,e,n)}},
+  {id:'tiny',name:'Tiny (0–2 nodes)',desc:'Empty graph, single node, or two nodes with/without an edge.',gen:(r)=>{const n=ri(r,0,2);return G(false,n===2&&r()<.5?[[0,1]]:[],n)},fixed:true}
+];
+const adj=(g,w)=>{const a=arr(g.n,()=>[]);g.edges.forEach(([u,v,x])=>{const t=x===undefined?v:[v,x];a[u].push(t);if(!g.directed)a[v].push(x===undefined?u:[u,x])});return a};
+
+// matrices
+const mat=(R,C,f)=>arr(R,i=>arr(C,j=>f(i,j)));
+const dims=(r,n)=>[Math.max(n,1),Math.max(1,n+ri(r,-1,1))];
+const matVars=[
+  {id:'random',name:'Random integers',desc:'Values 0–9. Rows/cols may differ by one.',gen:(r,n)=>{const[R,C]=dims(r,n);return mat(R,C,()=>ri(r,0,9))}},
+  {id:'binary',name:'Binary grid (islands)',desc:'0/1 with ~50% ones. Flood fill, island counting.',gen:(r,n)=>{const[R,C]=dims(r,n);return mat(R,C,()=>+(r()<.5))}},
+  {id:'sparse',name:'Sparse binary',desc:'~25% ones.',gen:(r,n)=>{const[R,C]=dims(r,n);return mat(R,C,()=>+(r()<.25))}},
+  {id:'maze',name:'Maze (0 open, 1 wall)',desc:'Top-left and bottom-right are always open. A path is not guaranteed.',gen:(r,n)=>{const[R,C]=dims(r,n);return mat(R,C,(i,j)=>(i+j===0||(i===R-1&&j===C-1))?0:+(r()<.3))}},
+  {id:'sorted',name:'Row & column sorted',desc:'Strictly increasing along rows and columns. For 2D binary search.',gen:(r,n)=>{const[R,C]=dims(r,n),m=mat(R,C,()=>0);for(let i=0;i<R;i++)for(let j=0;j<C;j++)m[i][j]=Math.max(i?m[i-1][j]:0,j?m[i][j-1]:0)+ri(r,1,3);return m}},
+  {id:'zeros',name:'All zeros',desc:'Uniform grid.',gen:(r,n)=>{const[R,C]=dims(r,n);return mat(R,C,()=>0)}},
+  {id:'line',name:'Single row or column',desc:'1×n or n×1. Breaks code that assumes both dimensions > 1.',gen:(r,n)=>r()<.5?[arr(Math.max(n,1),()=>ri(r,0,9))]:arr(Math.max(n,1),()=>[ri(r,0,9)])}
+];
+
+// strings
+const pick=(r,s)=>s[ri(r,0,s.length-1)];
+const str=(r,n,al)=>arr(n,()=>pick(r,al)).join('');
+const balanced=(r,n)=>{let s='',st=[],left=Math.floor(n/2);const T=['()','[]','{}'];while(left>0||st.length){if(left>0&&(!st.length||r()<.5)){const t=pick(r,T);s+=t[0];st.push(t[1]);left--}else s+=st.pop()}return s};
+const strVars=[
+  {id:'random',name:'Random lowercase',desc:'Letters a–z.',gen:(r,n)=>str(r,n,'abcdefghijklmnopqrstuvwxyz')},
+  {id:'small',name:'Small alphabet {a,b}',desc:'Lots of repeats. Sliding window, substring problems.',gen:(r,n)=>str(r,n,'ab')},
+  {id:'palin',name:'Palindrome',desc:'Odd or even length.',gen:(r,n)=>{const h=str(r,Math.ceil(n/2),'abc'),m=r()<.5?h.slice(0,-1):h;return h+Array.from(m).reverse().join('')}},
+  {id:'same',name:'All same character',desc:'e.g. "aaaa". Edge case for compression, uniqueness.',gen:(r,n)=>pick(r,'abc').repeat(n)},
+  {id:'pattern',name:'Repeating pattern',desc:'A short block repeated. Prefix function / KMP.',gen:(r,n)=>{const b=str(r,ri(r,2,3),'abc');return b.repeat(Math.ceil(n/b.length)).slice(0,n)}},
+  {id:'bal',name:'Balanced brackets',desc:'Valid ()[]{} sequence. Always even length.',gen:balanced},
+  {id:'unbal',name:'Random brackets',desc:'Likely invalid ()[]{} sequence.',gen:(r,n)=>str(r,n,'()[]{}')},
+  {id:'tiny',name:'Tiny (0–2 chars)',desc:'Empty string, one char, two chars.',gen:(r)=>str(r,ri(r,0,2),'ab'),fixed:true}
+];
+
+/* ---------- code formatting ---------- */
+const leaf=(x,l)=>l==='py'?py(x):js(x);
+const isObj=x=>x!==null&&typeof x==='object';
+function fmtV(v,l,ind=''){
+  const inl=leaf(v,l);
+  const rows2d=Array.isArray(v)&&v.length>1&&v.every(x=>Array.isArray(x)&&x.every(y=>!isObj(y)));
+  if(!isObj(v)||(inl.length<=48&&!rows2d))return inl;
+  const ni=ind+'  ';
+  if(Array.isArray(v)){
+    if(v.every(x=>!isObj(x))){const rows=[];for(let i=0;i<v.length;i+=12)rows.push(ni+v.slice(i,i+12).map(x=>leaf(x,l)).join(', '));return '[\n'+rows.join(',\n')+'\n'+ind+']'}
+    return '[\n'+v.map(x=>ni+fmtV(x,l,ni)).join(',\n')+'\n'+ind+']';
+  }
+  const kq=k=>l==='py'||!/^[A-Za-z_]\w*$/.test(k)?JSON.stringify(k):k;
+  return '{\n'+Object.entries(v).map(([k,x])=>ni+kq(k)+': '+fmtV(x,l,ni)).join(',\n')+'\n'+ind+'}';
+}
+function hl(src){
+  const re=/(\/\/.*|#.*)|("(?:[^"\\]|\\.)*")|\b(const|new|null|None|True|False)\b|(-?\b\d+(?:\.\d+)?\b)|\b(ListNode|TreeNode|listFrom|list_from)\b/g;
+  let out='',last=0,m;
+  while((m=re.exec(src))){
+    out+=esc(src.slice(last,m.index));
+    const c=m[1]?'cm':m[2]?'st':m[3]?'kw':m[4]?'nu':'cl';
+    out+=`<span class="${c}">${esc(m[0])}</span>`;last=re.lastIndex;
+  }
+  return out+esc(src.slice(last));
+}
+// a view = how the value is written in code: { name, expr(value,lang), note?(value) }
+const V=(name,f,note)=>({name,note,expr:(v,l)=>fmtV(f(v),l)});
+function snippet(view,val,l){
+  const c=l==='py'?'#':'//', e=view.expr(val,l), note=view.note?view.note(val):'';
+  return (note?`${c} ${note}\n`:'')+(l==='py'?`${view.name} = ${e}`:`const ${view.name} = ${e};`);
+}
+
+// linked list / tree as constructor calls
+const listExpr=(v,l)=>{
+  const a=v.vals,p=l==='py';
+  if(v.pos>=0||a.length>6)return `${p?'list_from':'listFrom'}(${leaf(a,l)}${v.pos>=0?', '+v.pos:''})`;
+  const C=p?'ListNode':'new ListNode';let s=p?'None':'null';
+  for(let i=a.length-1;i>=0;i--)s=i===a.length-1?`${C}(${a[i]})`:`${C}(${a[i]}, ${s})`;
+  return s;
+};
+const listNote=v=>v.pos>=0?`tail.next points back to index ${v.pos}`:(v.vals.length>6?'listFrom(values) builds the chain of nodes':'');
+function tn(n,l,ind=''){
+  const C=l==='py'?'TreeNode':'new TreeNode',N=l==='py'?'None':'null',ni=ind+'  ';
+  if(!n.l&&!n.r)return `${C}(${n.v})`;
+  const parts=[tn2(n.l,l,ni,N)];if(n.r)parts.push(tn(n.r,l,ni));
+  const flat=n.v+', '+parts.join(', ');
+  if(flat.length<=56&&!flat.includes('\n'))return `${C}(${flat})`;
+  return `${C}(${n.v},\n`+parts.map(p=>ni+p).join(',\n')+')';
+}
+const tn2=(n,l,ni,N)=>n?tn(n,l,ni):N;
+const treeExpr=(a,l)=>{const r=parseTree(a);return r?tn(r,l):(l==='py'?'None':'null')};
+
+// graph labels (strings) and views
+const NAMES=['alice','bob','carol','dave','erin','frank','grace','heidi','ivan','judy','ken','leo'];
+const LABELS={numbers:'Numbers (0, 1, 2)',letters:'Letters (A, B, C)',names:'Names (alice, bob)'};
+function applyLabels(g,mode,sd){
+  g.labels=mode==='letters'?arr(g.n,i=>String.fromCharCode(65+i)):mode==='names'?shuffle(rng(sd+1),NAMES).slice(0,g.n):null;
+  return g;
+}
+const lab=(g,i)=>g.labels?g.labels[i]:i;
+const gEdges=g=>g.edges.map(([u,v,w])=>w===undefined?[lab(g,u),lab(g,v)]:[lab(g,u),lab(g,v),w]);
+const gAdj=g=>{
+  const a=arr(g.n,()=>[]);
+  g.edges.forEach(([u,v,w])=>{const t=x=>w===undefined?lab(g,x):[lab(g,x),w];a[u].push(t(v));if(!g.directed)a[v].push(t(u))});
+  if(!g.labels)return a;
+  const o={};a.forEach((x,i)=>o[g.labels[i]]=x);return o;
+};
+const wt=g=>g.edges.some(e=>e.length>2);
+const gNote=g=>(g.directed?'directed: [from, to':'undirected: [a, b')+(wt(g)?', weight]':']');
+const gAdjNote=g=>(g.directed?'directed: ':'undirected: both ends list each other; ')+(wt(g)?'entries are [node, weight]':'neighbors per node');
+
+/* ---------- registry: add a structure by adding ONE entry here ---------- */
+const S=[
+  {id:'array',name:'Array',n:8,min:0,max:40,vars:arrVars,viz:vArray,views:{'Array':V('arr',v=>v)}},
+  {id:'string',name:'String',n:10,min:0,max:40,vars:strVars,viz:vString,views:{'String':V('s',v=>v)}},
+  {id:'list',name:'Linked list',n:5,min:0,max:20,vars:listVars,viz:vList,views:{
+    'Linked nodes':{name:'head',expr:listExpr,note:listNote},
+    'Values array':V('vals',v=>v.vals),
+    'Values + cycle pos':V('list',v=>v)}},
+  {id:'tree',name:'Binary tree',n:6,min:0,max:20,vars:treeVars,viz:vTree,views:{
+    'Tree nodes':{name:'root',expr:treeExpr},
+    'Level-order array':V('root',v=>v,()=>'level-order, null = missing child')}},
+  {id:'graph',name:'Graph',n:6,min:0,max:12,vars:graphVars,viz:vGraph,
+    opt:{id:'labels',label:'Node labels',choices:LABELS,apply:applyLabels},
+    views:{
+      'Adjacency list':V('graph',gAdj,gAdjNote),
+      'Edge list':V('edges',gEdges,gNote),
+      'Nodes + edges':{name:'graph',note:gNote,expr:(g,l)=>fmtV(g.labels?{nodes:g.labels,edges:gEdges(g)}:{n:g.n,edges:gEdges(g)},l)}}},
+  {id:'matrix',name:'Matrix / grid',n:4,min:1,max:10,vars:matVars,viz:vMatrix,views:{'2D array':V('grid',v=>v)}}
+];
+
+/* ---------- app ---------- */
+const COUNT=6, $=s=>document.querySelector(s);
+const pref=(k,d)=>{try{return localStorage.getItem(k)||d}catch(e){return d}};
+const setPref=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const newSeed=()=>Math.floor(Math.random()*1e6);
+let snips=[],exprs=[];
+
+function readHash(){
+  const p=location.hash.slice(1).split('/');
+  const s=S.find(x=>x.id===p[0])||S[0], v=s.vars.find(x=>x.id===p[1])||s.vars[0];
+  const n=p[2]!==undefined&&p[2]!==''&&Number.isFinite(+p[2])?+p[2]:s.n;
+  return{s,v,n:Math.max(s.min,Math.min(s.max,Math.round(n))),seed:Math.abs(Math.round(+p[3]))||newSeed()};
+}
+const go=(s,v,n,seed)=>{location.hash=`${s.id}/${v.id}/${n}/${seed}`};
+
+function render(){
+  const {s,v,n,seed}=readHash();
+  const first=Object.keys(s.views)[0], saved=pref('view:'+s.id,first);
+  const view=s.views[saved]?saved:first, V0=s.views[view];
+  const lang=pref('lang','js');
+  const optVal=s.opt?(s.opt.choices[pref('opt:'+s.opt.id,'')]?pref('opt:'+s.opt.id,''):Object.keys(s.opt.choices)[0]):null;
+
+  $('#nav').innerHTML=S.map(x=>{
+    const on=x.id===s.id;
+    return `<a class="s ${on?'on':''}" href="#${x.id}/${x.vars[0].id}/${x.n}/${seed}">${x.name}</a>`+
+      (on?x.vars.map(y=>`<a class="v ${y.id===v.id?'on':''}" href="#${x.id}/${y.id}/${n}/${seed}" ${y.id===v.id?'aria-current="page"':''}>${y.name}</a>`).join(''):'');
+  }).join('');
+
+  snips=[];exprs=[];let cards='';
+  for(let i=0;i<COUNT;i++){
+    const sd=seed+i*7919, val=v.gen(rng(sd),n);
+    if(s.opt)s.opt.apply(val,optVal,sd);
+    const snip=snippet(V0,val,lang);
+    snips.push(snip);exprs.push(V0.expr(val,lang));
+    cards+=`<article class="card"><div class="body"><pre class="code" tabindex="0">${hl(snip)}</pre><div class="viz">${s.viz(val)}</div></div>
+      <div class="foot"><span class="sd">seed ${sd}</span><button data-c="${i}">Copy code</button><button data-v="${i}">Copy value</button></div></article>`;
+  }
+
+  $('#main').innerHTML=`<h2>${esc(s.name)} — ${esc(v.name)}</h2><p class="desc">${esc(v.desc)}</p>
+  <div class="bar">
+    <label>Size<input id="n" type="number" min="${s.min}" max="${s.max}" value="${n}" ${v.fixed?'disabled title="This variation ignores size"':''}></label>
+    <label>Seed<input id="seed" type="number" min="1" value="${seed}"></label>
+    <button id="regen" class="pri">New mocks</button>
+    ${s.opt?`<label>${esc(s.opt.label)}<select id="opt">${Object.entries(s.opt.choices).map(([k,t])=>`<option value="${k}" ${k===optVal?'selected':''}>${esc(t)}</option>`).join('')}</select></label>`:''}
+    <label>Show as<select id="view">${Object.keys(s.views).map(k=>`<option ${k===view?'selected':''}>${esc(k)}</option>`).join('')}</select></label>
+    <label>Language<select id="lang"><option value="js" ${lang==='js'?'selected':''}>JavaScript</option><option value="py" ${lang==='py'?'selected':''}>Python</option></select></label>
+    <button id="all">Copy all ${COUNT} values</button>
+  </div><div class="grid">${cards}</div>`;
+
+  $('#n').onchange=e=>go(s,v,+e.target.value||s.n,seed);
+  $('#seed').onchange=e=>go(s,v,n,+e.target.value||newSeed());
+  $('#regen').onclick=()=>go(s,v,n,newSeed());
+  if(s.opt)$('#opt').onchange=e=>{setPref('opt:'+s.opt.id,e.target.value);render()};
+  $('#view').onchange=e=>{setPref('view:'+s.id,e.target.value);render()};
+  $('#lang').onchange=e=>{setPref('lang',e.target.value);render()};
+  $('#all').onclick=e=>copy('[\n  '+exprs.join(',\n  ')+'\n]',e.target);
+  document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>copy(snips[+b.dataset.c],b));
+  document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>copy(exprs[+b.dataset.v],b));
+  document.title=`${s.name} · ${v.name} — Algo Mocks`;
+}
+
+function copy(text,btn){
+  const done=()=>{const t=btn.textContent;btn.textContent='Copied';btn.classList.add('ok');setTimeout(()=>{btn.textContent=t;btn.classList.remove('ok')},1000)};
+  (navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).then(done,()=>{
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');done()}catch(e){}ta.remove()});
+}
+
+window.addEventListener('hashchange',render);
+if(!location.hash){const st=readHash();history.replaceState(null,'',`#${st.s.id}/${st.v.id}/${st.n}/${st.seed}`)}
+render();
+</script>
+</body>
+</html>
