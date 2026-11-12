@@ -308,6 +308,7 @@ function hl(src){
 const V=(name,f,note)=>({name,note,expr:(v,l)=>fmtV(f(v),l)});
 function tsType(value,view){
   if(view.name==='head')return 'ListNode | null';
+  if(view.expr===gAdj)return 'AdjacencyList';
   if(view.expr===treeExpr)return 'TreeNode | null';
   if(view.name==='root'&&Array.isArray(value))return '(number | null)[]';
   if(view.name==='vals')return 'number[]';
@@ -327,9 +328,28 @@ function tsType(value,view){
 }
 function tsTypes(view,val){
   const t=tsType(val,view), defs=[];
-  if(t.includes('ListNode'))defs.push('type ListNode = { val: number; next: ListNode | null };');
+  if(t.includes('ListNode'))defs.push(
+    'class ListNode {',
+    '  val: number;',
+    '  next: ListNode | null;',
+    '  constructor(val: number, next: ListNode | null = null) { this.val = val; this.next = next; }',
+    '}',
+    'function listFrom(values: number[], pos = -1): ListNode | null {',
+    '  const nodes = values.map(value => new ListNode(value));',
+    '  nodes.forEach((node, i) => node.next = nodes[i + 1] ?? null);',
+    '  if (pos >= 0 && nodes.length) nodes[nodes.length - 1].next = nodes[pos] ?? null;',
+    '  return nodes[0] ?? null;',
+    '}'
+  );
   if(t==='LinkedListData')defs.push('type LinkedListData = { vals: number[]; pos: number };');
-  if(t.includes('TreeNode'))defs.push('type TreeNode = { val: number; left: TreeNode | null; right: TreeNode | null };');
+  if(t.includes('TreeNode'))defs.push(
+    'class TreeNode {',
+    '  val: number;',
+    '  left: TreeNode | null;',
+    '  right: TreeNode | null;',
+    '  constructor(val: number, left: TreeNode | null = null, right: TreeNode | null = null) { this.val = val; this.left = left; this.right = right; }',
+    '}'
+  );
   if(t==='GraphData'||t==='GraphEdge[]')defs.push(
     'type GraphNode = number | string;',
     'type GraphEdge = [from: GraphNode, to: GraphNode] | [from: GraphNode, to: GraphNode, weight: number];',
