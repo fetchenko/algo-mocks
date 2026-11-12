@@ -225,9 +225,18 @@ function addExtra(r,n,edges,k,directed){
 const ids=n=>arr(n,i=>i);
 const G=(directed,edges,n)=>({n,directed,edges});
 const connected=(r,n)=>addExtra(r,n,spanning(r,ids(n)),ri(r,0,n),false);
+function forest(r,n){
+  const order=shuffle(r,ids(n)),edges=[];
+  for(let i=1;i<n;i++)if(r()<.65)edges.push([order[i],order[ri(r,0,i-1)]]);
+  // Ensure the result is disconnected when there are at least two nodes.
+  if(n>1&&edges.length===n-1)edges.splice(ri(r,0,edges.length),1);
+  return edges;
+}
 const graphVars=[
   {id:'connected',name:'Connected, undirected',desc:'Random spanning tree plus a few extra edges.',gen:(r,n)=>G(false,connected(r,n),n)},
   {id:'tree',name:'Tree',desc:'Connected with exactly n−1 edges. No cycles.',gen:(r,n)=>G(false,spanning(r,ids(n)),n)},
+  {id:'forest',name:'Forest',desc:'Undirected and acyclic, with at least two components when n ≥ 2.',gen:(r,n)=>G(false,forest(r,n),n)},
+  {id:'path',name:'Path',desc:'A single undirected chain. Connected and acyclic; internal nodes have degree 2.',gen:(r,n)=>{const p=shuffle(r,ids(n));return G(false,arr(Math.max(n-1,0),i=>[p[i],p[i+1]]),n)}},
   {id:'disc',name:'Disconnected',desc:'Two separate components. Tests BFS/DFS that only start from node 0.',gen:(r,n)=>{
     if(n<2)return G(false,[],n);const c=ri(r,1,n-1);
     const e=spanning(r,ids(c)).concat(spanning(r,arr(n-c,i=>c+i)));return G(false,addExtra(r,n,e,ri(r,0,1),false).filter(([u,v])=>(u<c)===(v<c)),n)}},
