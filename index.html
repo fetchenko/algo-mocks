@@ -426,7 +426,7 @@ const gAdjTs=g=>{
     ? (g.labels?'[string, number][]':'[number, number][]')
     : (g.labels?'string[]':'number[]');
   const entries=a.map((neighbors,i)=>'  ['+js(lab(g,i))+', '+js(neighbors)+']');
-  return 'new Map<'+keyType+', '+entryType+ '>([\\n'+entries.join(',\\n')+'\\n])';
+  return 'new Map<'+keyType+', '+entryType+ '>([\n'+entries.join(',\n')+'\n])';
 };
 const wt=g=>g.edges.some(e=>e.length>2);
 const gNote=g=>(g.directed?'directed: [from, to':'undirected: [a, b')+(wt(g)?', weight]':']');
