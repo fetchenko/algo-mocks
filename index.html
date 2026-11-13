@@ -365,6 +365,9 @@ function tsTypes(view,val){
 }
 function snippet(view,val,l){
   const c=l==='py'?'#':'//', e=view.expr(val,l), note=view.note?view.note(val):'';
+  if(l==='ts'&&view.format==='graph-adjacency'){
+    return (note?`// ${note}\n`:'')+`const ${view.name} = ${e};`;
+  }
   if(l==='ts'){
     const t=tsTypes(view,val);
     return (note?`// ${note}\n`:'')+(t.defs.length?t.defs.join('\n')+'\n\n':'')+`const ${view.name}: ${t.type} = ${e};`;
@@ -408,16 +411,22 @@ const gAdj=(g,l)=>{
     a[u].push(neighbor(v));
     if(!g.directed)a[v].push(neighbor(u));
   });
-  if(l==='ts'){
-    const keyType=g.labels?'string':'number';
-    const entryType=wt(g)
-      ? (g.labels?'[string, number][]':'[number, number][]')
-      : (g.labels?'string[]':'number[]');
-    const entries=a.map((neighbors,i)=>'['+js(lab(g,i))+', '+js(neighbors)+']');
-    return 'new Map<'+keyType+', '+entryType+ '>([\\n  '+entries.join(',\\n  ')+'\\n])';
-  }
   if(!g.labels)return a;
   const o={};a.forEach((x,i)=>o[g.labels[i]]=x);return o;
+};
+const gAdjTs=g=>{
+  const a=arr(g.n,()=>[]);
+  g.edges.forEach(([u,v,w])=>{
+    const neighbor=x=>w===undefined?lab(g,x):[lab(g,x),w];
+    a[u].push(neighbor(v));
+    if(!g.directed)a[v].push(neighbor(u));
+  });
+  const keyType=g.labels?'string':'number';
+  const entryType=wt(g)
+    ? (g.labels?'[string, number][]':'[number, number][]')
+    : (g.labels?'string[]':'number[]');
+  const entries=a.map((neighbors,i)=>'  ['+js(lab(g,i))+', '+js(neighbors)+']');
+  return 'new Map<'+keyType+', '+entryType+ '>([\\n'+entries.join(',\\n')+'\\n])';
 };
 const wt=g=>g.edges.some(e=>e.length>2);
 const gNote=g=>(g.directed?'directed: [from, to':'undirected: [a, b')+(wt(g)?', weight]':']');
@@ -437,7 +446,7 @@ const S=[
   {id:'graph',name:'Graph',n:5,min:0,max:12,vars:graphVars,viz:vGraph,
     opt:{id:'labels',label:'Node labels',choices:LABELS,apply:applyLabels},
     views:{
-      'Adjacency list':V('graph',gAdj,gAdjNote),
+      'Adjacency list':{name:'graph',format:'graph-adjacency',note:gAdjNote,expr:(g,l)=>l==='ts'?gAdjTs(g):fmtV(gAdj(g,l),l)},
       'Edge list':V('edges',gEdges,gNote),
       'Nodes + edges':{name:'graph',note:gNote,expr:(g,l)=>fmtV(g.labels?{nodes:g.labels,edges:gEdges(g)}:{n:g.n,edges:gEdges(g)},l)}}},
   {id:'matrix',name:'Matrix / grid',n:4,min:1,max:10,vars:matVars,viz:vMatrix,views:{'2D array':V('grid',v=>v)}}
