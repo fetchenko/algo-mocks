@@ -408,13 +408,13 @@ const gAdj=(g,l)=>{
     a[u].push(neighbor(v));
     if(!g.directed)a[v].push(neighbor(u));
   });
-  if(l==='ts'&&g.labels){
-    const entryType=wt(g)?'[string, number][]':'string[]';
+  if(l==='ts'){
+    const keyType=g.labels?'string':'number';
+    const entryType=wt(g)
+      ? (g.labels?'[string, number][]':'[number, number][]')
+      : (g.labels?'string[]':'number[]');
     const entries=a.map((neighbors,i)=>'['+js(lab(g,i))+', '+js(neighbors)+']');
-    return 'new Map<string, '+entryType+ '>(['+entries.join(', ')+'])';
-  }
-  if(!g.labels&&l==='ts'){
-    return '{\n'+a.map((neighbors,i)=>'  '+i+': '+js(neighbors)).join(',\n')+'\n}';
+    return 'new Map<'+keyType+', '+entryType+ '>([\\n  '+entries.join(',\\n  ')+'\\n])';
   }
   if(!g.labels)return a;
   const o={};a.forEach((x,i)=>o[g.labels[i]]=x);return o;
