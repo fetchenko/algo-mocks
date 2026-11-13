@@ -454,7 +454,7 @@ function readHash(){
   const p=location.hash.slice(1).split('/');
   const s=S.find(x=>x.id===p[0])||S[0], v=s.vars.find(x=>x.id===p[1])||s.vars[0];
   const n=p[2]!==undefined&&p[2]!==''&&Number.isFinite(+p[2])?+p[2]:s.n;
-  return{s,v,n:Math.max(s.min,Math.min(s.max,Math.round(n))),seed:Math.abs(Math.round(+p[3]))||newSeed()};
+  return{s,v,n:Math.max(s.min,Math.min(s.max,Math.round(n))),seed:p[3]!==undefined&&Number.isFinite(+p[3])&&Math.round(+p[3])!==0?Math.abs(Math.round(+p[3])):DEFAULT_SEED};
 }
 const go=(s,v,n,seed)=>{location.hash=`${s.id}/${v.id}/${n}/${seed}`};
 
