@@ -427,7 +427,7 @@ const S=[
   {id:'tree',name:'Binary tree',n:6,min:0,max:20,vars:treeVars,viz:vTree,views:{
     'Tree nodes':{name:'root',expr:treeExpr},
     'Level-order array':V('root',v=>v,()=>'level-order, null = missing child')}},
-  {id:'graph',name:'Graph',n:6,min:0,max:12,vars:graphVars,viz:vGraph,
+  {id:'graph',name:'Graph',n:5,min:0,max:12,vars:graphVars,viz:vGraph,
     opt:{id:'labels',label:'Node labels',choices:LABELS,apply:applyLabels},
     views:{
       'Adjacency list':V('graph',gAdj,gAdjNote),
@@ -437,7 +437,7 @@ const S=[
 ];
 
 /* ---------- app ---------- */
-const COUNT=6, $=s=>document.querySelector(s);
+const COUNT=6, DEFAULT_SEED=20261113, $=s=>document.querySelector(s);
 const pref=(k,d)=>{try{return localStorage.getItem(k)||d}catch(e){return d}};
 const setPref=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 const newSeed=()=>Math.floor(Math.random()*1e6);
