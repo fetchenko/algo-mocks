@@ -444,7 +444,7 @@ const S=[
 ];
 
 /* ---------- app ---------- */
-const COUNT=6, DEFAULT_SEED=20261113, $=s=>document.querySelector(s);
+const COUNT=6, DEFAULT_SEED=20261111, $=s=>document.querySelector(s);
 const pref=(k,d)=>{try{return localStorage.getItem(k)||d}catch(e){return d}};
 const setPref=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 const newSeed=()=>Math.floor(Math.random()*1e6);
