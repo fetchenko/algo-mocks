@@ -245,8 +245,12 @@ const graphVars=[
   {id:'weighted',name:'Weighted',desc:'Connected, weights 1–9. For Dijkstra, Prim, Kruskal.',gen:(r,n)=>G(false,connected(r,n).map(([u,v])=>[u,v,ri(r,1,9)]),n)},
   {id:'dag',name:'Directed acyclic (DAG)',desc:'Labels are shuffled, so edges do not always go from smaller to larger id. For topological sort.',gen:(r,n)=>{
     const p=shuffle(r,ids(n)),e=[];for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(r()<.4)e.push([p[i],p[j]]);return G(true,e,n)}},
-  {id:'digraph',name:'Directed with cycle',desc:'A guaranteed directed cycle through every node (for n ≥ 2).',gen:(r,n)=>{
-    const e=n<2?[]:arr(n,i=>[i,(i+1)%n]);return G(true,e,n)}},
+  {id:'digraph',name:'Directed with cycle',desc:'A guaranteed directed cycle of varying length, plus optional extra directed edges.',gen:(r,n)=>{
+    if(n<2)return G(true,[],n);
+    const cycle=shuffle(r,ids(n)).slice(0,ri(r,2,n));
+    const e=arr(cycle.length,i=>[cycle[i],cycle[(i+1)%cycle.length]]);
+    addExtra(r,n,e,ri(r,0,Math.floor(n*1.5)),true);
+    return G(true,e,n)}},
   {id:'tiny',name:'Tiny (0–2 nodes)',desc:'Empty graph, single node, or two nodes with/without an edge.',gen:(r)=>{const n=ri(r,0,2);return G(false,n===2&&r()<.5?[[0,1]]:[],n)},fixed:true}
 ];
 const adj=(g,w)=>{const a=arr(g.n,()=>[]);g.edges.forEach(([u,v,x])=>{const t=x===undefined?v:[v,x];a[u].push(t);if(!g.directed)a[v].push(x===undefined?u:[u,x])});return a};
