@@ -260,6 +260,7 @@ const mat=(R,C,f)=>arr(R,i=>arr(C,j=>f(i,j)));
 const dims=(r,n)=>[Math.max(n,1),Math.max(1,n+ri(r,-1,1))];
 const matVars=[
   {id:'random',name:'Random integers',desc:'Values 0–9. Rows/cols may differ by one.',gen:(r,n)=>{const[R,C]=dims(r,n);return mat(R,C,()=>ri(r,0,9))}},
+  {id:'below-default',name:'Random integers below default',desc:'Values are smaller than the default value 3: each cell is 0, 1, or 2.',gen:(r,n)=>{const[R,C]=dims(r,n);return mat(R,C,()=>ri(r,0,2))}},
   {id:'binary',name:'Binary grid (islands)',desc:'0/1 with ~50% ones. Flood fill, island counting.',gen:(r,n)=>{const[R,C]=dims(r,n);return mat(R,C,()=>+(r()<.5))}},
   {id:'sparse',name:'Sparse binary',desc:'~25% ones.',gen:(r,n)=>{const[R,C]=dims(r,n);return mat(R,C,()=>+(r()<.25))}},
   {id:'maze',name:'Maze (0 open, 1 wall)',desc:'Top-left and bottom-right are always open. A path is not guaranteed.',gen:(r,n)=>{const[R,C]=dims(r,n);return mat(R,C,(i,j)=>(i+j===0||(i===R-1&&j===C-1))?0:+(r()<.3))}},
